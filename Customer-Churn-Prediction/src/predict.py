@@ -1,33 +1,23 @@
 import joblib
-import pandas as pd
-import numpy as np
+from preprocess import load_and_preprocess
 
 # Load trained model
 model = joblib.load("models/churn_model.pkl")
 
-print("=== Customer Churn Prediction ===")
+# Load processed dataset
+df = load_and_preprocess()
 
-# Important inputs
-tenure = int(input("Tenure Months: "))
-monthly_charges = float(input("Monthly Charges: "))
-total_charges = float(input("Total Charges: "))
+# Remove target column
+X = df.drop("Churn", axis=1)
 
-# Create 19 features with default value 0
-features = np.zeros(19)
+# Take first customer data
+sample = X.iloc[[0]]
 
-# Set important values
-features[4] = tenure
-features[17] = monthly_charges
-features[18] = total_charges
-
-# Convert to DataFrame
-data = pd.DataFrame([features])
-
-# Prediction
-prediction = model.predict(data)
+# Predict
+prediction = model.predict(sample)
 
 # Output
 if prediction[0] == 1:
-    print("\nCustomer Will Churn")
+    print("Customer Will Churn")
 else:
-    print("\nCustomer Will Not Churn")
+    print("Customer Will Not Churn")
